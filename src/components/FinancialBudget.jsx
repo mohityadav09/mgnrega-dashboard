@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Select from 'react-select';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import { FaBoxOpen } from 'react-icons/fa';
 import './FinancialBudget.css';
@@ -64,10 +65,13 @@ const FinancialBudgetPage = () => {
         if (!data || data.length === 0) {
           throw new Error("No data found for the selected filters.");
         }
+        
+        // Sort data once after fetching
+        const sortedData = data.sort((a, b) => monthOrder[a.month] - monthOrder[b.month]);
+        setBudgetData(sortedData);
 
-        setBudgetData(data);
       } catch (e) {
-        console.error(" Failed to fetch budget data:", e);
+        console.error("Failed to fetch budget data:", e);
         setError('No records are available for the selected filters.');
       } finally {
         setLoading(false);
@@ -76,27 +80,59 @@ const FinancialBudgetPage = () => {
 
     fetchBudgetData();
   }, [selectedYear?.value, selectedState?.value, selectedDistrict?.value]);
+  
+  // --- Memoized Data for Charts ---
 
-  // --- Prepare Data for Chart ---
-  const chartData = useMemo(() => {
+  // 1. Monthly Expenditure (Stacked Bar Chart)
+  const monthlyExpenditureData = useMemo(() => {
     if (!budgetData || budgetData.length === 0) return [];
+    return budgetData.map(item => ({
+      month: item.month,
+      Wages: parseFloat(item.wages) || 0,
+      Material: parseFloat(item.material_and_skilled_wages) || 0,
+      Admin: parseFloat(item.total_adm_expenditure) || 0,
+    }));
+  }, [budgetData]);
 
-    return budgetData
-      .map(item => ({
+  // 2. Work Progress (Line Chart)
+  const workProgressData = useMemo(() => {
+    if (!budgetData || budgetData.length === 0) return [];
+    return budgetData.map(item => ({
         month: item.month,
-        Wages: parseFloat(item.wages) || 0,
-        Material: parseFloat(item.material_and_skilled_wages) || 0,
-        Admin: parseFloat(item.total_adm_expenditure) || 0,
-      }))
-      .sort((a, b) => monthOrder[a.month] - monthOrder[b.month]);
+        'Completed Works': parseInt(item.number_of_completed_works, 10) || 0,
+        'Ongoing Works': parseInt(item.number_of_ongoing_works, 10) || 0,
+    }));
+  }, [budgetData]);
+
+  // 3. Average Wage Rate (Line Chart)
+  const wageRateData = useMemo(() => {
+    if (!budgetData || budgetData.length === 0) return [];
+    return budgetData.map(item => ({
+        month: item.month,
+        'Average Wage': parseFloat(item.average_wage_rate_per_day_per_person) || 0,
+    }));
+  }, [budgetData]);
+
+  // 4. Expenditure Breakdown (Pie Chart) for the latest month
+  const expenditurePieData = useMemo(() => {
+    if (!budgetData || budgetData.length === 0) return [];
+    const latestMonthData = budgetData[budgetData.length - 1]; // Already sorted
+    
+    const agri = parseFloat(latestMonthData.percent_of_expenditure_on_agriculture_allied_works) || 0;
+    const nrm = parseFloat(latestMonthData.percent_of_nrm_expenditure) || 0;
+    const other = Math.max(0, 100 - agri - nrm); // Ensure it's not negative
+
+    return [
+      { name: 'Agriculture & Allied', value: agri },
+      { name: 'NRM Works', value: nrm },
+      { name: 'Other Works', value: other },
+    ];
   }, [budgetData]);
 
   // --- Filter Options ---
   const yearOptions = formatOptions(financialYears);
   const stateOptions = formatOptions(states);
-  const districtOptions = selectedState
-    ? formatOptions(districtsByState[selectedState.value])
-    : [];
+  const districtOptions = selectedState ? formatOptions(districtsByState[selectedState.value]) : [];
 
   const handleStateChange = (selectedOption) => {
     setSelectedState(selectedOption);
@@ -113,7 +149,6 @@ const FinancialBudgetPage = () => {
     if (loading) {
       return <div className="message-container">Loading data...</div>;
     }
-
     if (error) {
       return (
         <div className="message-container error-container">
@@ -122,40 +157,91 @@ const FinancialBudgetPage = () => {
         </div>
       );
     }
-
-    if (chartData.length === 0) {
+    if (budgetData.length === 0) {
       return (
         <div className="message-container error-container">
           <FaBoxOpen className="error-icon" />
-          <p className="error-message">No data to display.</p>
+          <p className="error-message">No data to display for the selected filters.</p>
         </div>
       );
     }
 
+    const PIE_COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
+
     return (
-      <div className="card chart-card">
-        <h3>Monthly Expenditure Breakdown (in ₹ Lakhs)</h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="month" />
-            <YAxis
-              label={{
-                value: 'Expenditure (in ₹ Lakhs)',
-                angle: -90,
-                position: 'insideLeft',
-              }}
-            />
-            <Tooltip formatter={(value) => `${value.toFixed(2)} Lakhs`} />
-            <Legend />
-            <Bar dataKey="Wages" stackId="a" fill="#27ae60" />
-            <Bar dataKey="Material" stackId="a" fill="#3498db" />
-            <Bar dataKey="Admin" stackId="a" fill="#e67e22" />
-          </BarChart>
-        </ResponsiveContainer>
+      <div className="charts-grid">
+        {/* Chart 1: Monthly Expenditure */}
+        <div className="card chart-card">
+          <h3>Monthly Expenditure Breakdown (in ₹ Lakhs)</h3>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={monthlyExpenditureData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="month" />
+              <YAxis label={{ value: 'Expenditure (₹ Lakhs)', angle: -90, position: 'insideLeft' }} />
+              <Tooltip formatter={(value) => `${value.toFixed(2)} Lakhs`} />
+              <Legend />
+              <Bar dataKey="Wages" stackId="a" fill="#27ae60" />
+              <Bar dataKey="Material" stackId="a" fill="#3498db" />
+              <Bar dataKey="Admin" stackId="a" fill="#e67e22" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        
+        {/* Chart 2: Work Progress */}
+        {/* <div className="card chart-card">
+          <h3>Work Progress Over Time</h3>
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={workProgressData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis label={{ value: 'Number of Works', angle: -90, position: 'insideLeft' }}/>
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="Completed Works" stroke="#82ca9d" strokeWidth={2} />
+                <Line type="monotone" dataKey="Ongoing Works" stroke="#8884d8" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div> */}
+
+        {/* Chart 3: Average Wage Rate */}
+        <div className="card chart-card">
+          <h3>Average Daily Wage Rate (₹)</h3>
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={wageRateData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis  label={{ value: 'Wage Rate (₹)', angle: -90, position: 'insideLeft' }}/>
+                <Tooltip formatter={(value) => `₹ ${value.toFixed(2)}`} />
+                <Legend />
+                <Line type="monotone" dataKey="Average Wage" stroke="#ff7300" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        
+        {/* Chart 4: Expenditure Breakdown */}
+        <div className="card chart-card">
+            <h3>Expenditure Breakdown by Category (%)</h3>
+            <ResponsiveContainer width="100%" height={400}>
+                <PieChart>
+                    <Pie
+                        data={expenditurePieData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={150}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    >
+                        {expenditurePieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                        ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => `${value.toFixed(2)}%`} />
+                    <Legend />
+                </PieChart>
+            </ResponsiveContainer>
+        </div>
       </div>
     );
   };
@@ -163,7 +249,6 @@ const FinancialBudgetPage = () => {
   // --- JSX Return ---
   return (
     <div className="budget-page">
-      {/* Header & Filters */}
       <header className="dashboard-header">
         <div>
           <h1>Financial Budget Analysis</h1>
@@ -171,34 +256,22 @@ const FinancialBudgetPage = () => {
             Showing monthly expenditure for {selectedDistrict?.label}, {selectedState?.label} | FY {selectedYear?.label}
           </p>
         </div>
-
         <div className="filters">
           <Select
-            className="filter-select-container"
-            classNamePrefix="filter-select"
-            options={yearOptions}
-            value={selectedYear}
-            onChange={setSelectedYear}
+            className="filter-select-container" classNamePrefix="filter-select"
+            options={yearOptions} value={selectedYear} onChange={setSelectedYear}
           />
           <Select
-            className="filter-select-container"
-            classNamePrefix="filter-select"
-            options={stateOptions}
-            value={selectedState}
-            onChange={handleStateChange}
+            className="filter-select-container" classNamePrefix="filter-select"
+            options={stateOptions} value={selectedState} onChange={handleStateChange}
           />
           <Select
-            className="filter-select-container"
-            classNamePrefix="filter-select"
-            options={districtOptions}
-            value={selectedDistrict}
-            onChange={setSelectedDistrict}
+            className="filter-select-container" classNamePrefix="filter-select"
+            options={districtOptions} value={selectedDistrict} onChange={setSelectedDistrict}
             isDisabled={!selectedState}
           />
         </div>
       </header>
-
-      {/* Chart Section */}
       <main className="budget-content">{renderContent()}</main>
     </div>
   );
