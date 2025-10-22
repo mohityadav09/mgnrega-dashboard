@@ -1,0 +1,89 @@
+/* --- Main Page Layout --- */
+.budget-page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f4f6f9;
+  padding: 1.5rem;
+  max-width: 1600px;
+  min-height: 100vh; /* Ensure it takes full height */
+  margin: 0 auto;
+}
+
+/* --- Header (Reused from Homepage) --- */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Allow filters to wrap on small screens */
+  margin-bottom: 1.5rem;
+  background: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.75rem;
+}
+
+.dashboard-header p {
+  margin: 0;
+  color: #5a6e82;
+  font-size: 0.9rem;
+}
+
+/* --- Main Content Area --- */
+.budget-content {
+  width: 100%;
+}
+
+/* --- Chart Card (Reused from Homepage) --- */
+.chart-card {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.chart-card h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* --- Loading/Error Message Containers --- */
+.message-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 1rem;
+  font-size: 1.2rem;
+  color: #5a6e82;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.error-container {
+  flex-direction: column;
+  background-color: #fff8f8;
+  border: 1px solid #fbdbe0;
+  color: #c0392b;
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #e74c3c;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+}

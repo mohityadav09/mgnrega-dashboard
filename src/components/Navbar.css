@@ -1,0 +1,96 @@
+
+/* --- Main App Layout --- */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content-area {
+  flex-grow: 1;
+  padding: 2rem;
+  background-color: #f4f7fa;
+}
+
+/* --- General Navbar Styles --- */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+/* --- Sidebar --- */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background-color: #34495e;
+  color: #ecf0f1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid #34495e;
+}
+
+.sidebar-title {
+  margin: 0.5rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.sidebar-menu {
+  flex-grow: 1;
+  padding: 1rem 0;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-link:hover {
+  background-color: #34495e;
+  color: #ffffff;
+}
+
+/* Collapsible Section */
+.collapsible-section summary {
+  cursor: pointer;
+  list-style: none; /* Hide default arrow */
+}
+
+.collapsible-section summary::-webkit-details-marker {
+  display: none; /* Hide default arrow for Chrome/Safari */
+}
+
+.submenu {
+  padding-left: 2rem; /* Indent sub-items */
+  background-color: #233140;
+}
+
+.submenu a {
+  display: block;
+  padding: 0.6rem 1.5rem;
+  color: #bdc3c7;
+}
+
+.submenu a:hover {
+  color: #ffffff;
+}
+
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid #34495e;
+}

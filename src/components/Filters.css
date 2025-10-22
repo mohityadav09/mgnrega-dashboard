@@ -1,0 +1,58 @@
+/* src/components/Filters.css */
+
+/* This targets the container for each dropdown */
+.filter-select-container {
+  width: 200px; /* Adjust width as needed */
+  font-family: var(--font-family);
+  color: #333;
+}
+
+/* This is the main box of the dropdown */
+.filter-select__control {
+  background-color: white !important;
+  border: 1px solid #dfe4ea !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  min-height: 40px;
+}
+
+/* Style for the control when it's focused */
+.filter-select__control--is-focused {
+  border-color: var(--primary-blue) !important;
+  box-shadow: 0 0 0 1px var(--primary-blue) !important;
+}
+
+/* Placeholder text style */
+.filter-select__placeholder {
+  color: #a0a0a0;
+}
+
+/* The dropdown menu itself */
+.filter-select__menu {
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  background-color: white !important;
+}
+
+/* Style for each option in the dropdown */
+.filter-select__option {
+  cursor: pointer;
+}
+
+/* Style for an option when you hover over it */
+.filter-select__option--is-focused {
+  background-color: #f4f6f9 !important;
+  color: var(--primary-blue);
+}
+
+/* Style for the selected option */
+.filter-select__option--is-selected {
+  background-color: var(--primary-blue) !important;
+  color: white !important;
+}
+
+/* Hides the default dropdown indicator arrow if you want a cleaner look */
+.filter-select__indicator-separator {
+    display: none;
+}
