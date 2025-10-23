@@ -1,14 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Select from "react-select";
 import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+    LineChart, Line // --- ADDED LineChart and Line ---
 } from "recharts";
 import { FaBoxOpen } from "react-icons/fa";
 import "./DistrictComparisonPage.css";
@@ -34,19 +28,17 @@ const orderedMonths = [
     "April", "May", "June", "July", "Aug", "Sep",
     "Oct", "Nov", "Dec", "Jan", "Feb", "March",
 ];
-
 const monthOrder = Object.fromEntries(orderedMonths.map((m, i) => [m, i + 1]));
 
 // --- Normalize month names ---
 const normalizeMonth = (name = "") => {
     const normalized = name.trim().toLowerCase();
-    // Handle 'Sept' abbreviation
     if (normalized.startsWith("sept")) return "Sep";
     const match = orderedMonths.find((m) => m.toLowerCase().startsWith(normalized));
     return match || name;
 };
 
-// --- Convert cumulative to monthly ---
+// --- Convert cumulative expenditure to monthly ---
 const processDistrictData = (data) => {
     if (!Array.isArray(data) || data.length === 0) return [];
 
@@ -71,6 +63,19 @@ const processDistrictData = (data) => {
             Admin: Math.max(0, item.admin - prev.admin),
         };
     });
+};
+
+// --- NEW: Process average wage data ---
+// Assumes API provides 'avg_wage_per_day' which is NOT cumulative
+const processWageData = (data) => {
+    if (!Array.isArray(data) || data.length === 0) return [];
+    return data
+        .map((item) => ({
+            month: normalizeMonth(item.month),
+            // IMPORTANT: Assumes your API response has an 'avg_wage_per_day' field
+            avgWage: parseFloat(item.average_wage_rate_per_day_per_person) || 0,
+        }))
+        .sort((a, b) => (monthOrder[a.month] || 99) - (monthOrder[b.month] || 99));
 };
 
 // --- Main Component ---
@@ -134,21 +139,16 @@ const DistrictComparisonPage = () => {
         return () => controller.abort();
     }, [selectedYear, selectedState, selectedDistrict1, selectedDistrict2]);
 
-    // --- Merge and Fill Missing Months ---
-    const chartData = useMemo(() => {
+    // --- Prepare data for Bar Chart ---
+    const barChartData = useMemo(() => {
         if (!comparisonData.length) return [];
-
         const d1 = selectedDistrict1.label;
         const d2 = selectedDistrict2.label;
-
         const d1Processed = processDistrictData(comparisonData.filter((x) => x.district_name === d1));
         const d2Processed = processDistrictData(comparisonData.filter((x) => x.district_name === d2));
 
         const merged = {};
-
-        orderedMonths.forEach((m) => {
-            merged[m] = { month: m };
-        });
+        orderedMonths.forEach((m) => { merged[m] = { month: m }; });
 
         d1Processed.forEach((item) => {
             if (merged[item.month]) {
@@ -157,7 +157,6 @@ const DistrictComparisonPage = () => {
                 merged[item.month][`${d1}_Admin`] = item.Admin;
             }
         });
-
         d2Processed.forEach((item) => {
             if (merged[item.month]) {
                 merged[item.month][`${d2}_Wages`] = item.Wages;
@@ -165,7 +164,30 @@ const DistrictComparisonPage = () => {
                 merged[item.month][`${d2}_Admin`] = item.Admin;
             }
         });
+        return Object.values(merged);
+    }, [comparisonData, selectedDistrict1, selectedDistrict2]);
 
+    // --- NEW: Prepare data for Line Chart ---
+    const lineChartData = useMemo(() => {
+        if (!comparisonData.length) return [];
+        const d1 = selectedDistrict1.label;
+        const d2 = selectedDistrict2.label;
+        const d1WageData = processWageData(comparisonData.filter((x) => x.district_name === d1));
+        const d2WageData = processWageData(comparisonData.filter((x) => x.district_name === d2));
+        
+        const merged = {};
+        orderedMonths.forEach((m) => { merged[m] = { month: m }; });
+
+        d1WageData.forEach((item) => {
+            if (merged[item.month]) {
+                merged[item.month][`${d1}_AvgWage`] = item.avgWage;
+            }
+        });
+        d2WageData.forEach((item) => {
+            if (merged[item.month]) {
+                merged[item.month][`${d2}_AvgWage`] = item.avgWage;
+            }
+        });
         return Object.values(merged);
     }, [comparisonData, selectedDistrict1, selectedDistrict2]);
 
@@ -175,59 +197,85 @@ const DistrictComparisonPage = () => {
         if (error)
             return (
                 <div className="message-container error-container">
-                    <FaBoxOpen className="error-icon" />
-                    <p>{error}</p>
+                    <FaBoxOpen className="error-icon" /> <p>{error}</p>
                 </div>
             );
-        if (!chartData.length) return <div className="message-container">No data.</div>;
+        if (!barChartData.length) return <div className="message-container">No data.</div>;
 
         const d1 = selectedDistrict1.label;
         const d2 = selectedDistrict2.label;
 
         return (
-            <div className="card chart-card">
-                <h3>Monthly Expenditure Comparison ({d1} vs {d2})</h3>
-                <ResponsiveContainer width="100%" height={450}>
-                    <BarChart data={chartData} margin={{ top: 20, right: 30, left: 30, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="month" />
-                        <YAxis
-                            tickFormatter={(v) => `₹${v}`}
-                            label={{
-                                value: "Expenditure (₹ Lakhs)",
-                                angle: -90,
-                                position: "insideLeft",
-                                dy: 50,
-                            }}
-                            allowDecimals={false}
-                            domain={[0, "auto"]}
-                        />
-                        <Tooltip formatter={(v) => `₹${v?.toFixed?.(2)} Lakhs`} />
-                        <Legend />
+            <>
+                {/* --- Bar Chart Card --- */}
+                <div className="card chart-card">
+                    <h3>Monthly Expenditure Comparison ({d1} vs {d2})</h3>
+                    <ResponsiveContainer width="100%" height={450}>
+                        <BarChart data={barChartData} margin={{ top: 20, right: 30, left: 30, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="month" />
+                            <YAxis
+                                tickFormatter={(v) => `₹${v}`}
+                                label={{ value: "Expenditure (₹ Lakhs)", angle: -90, position: "insideLeft", dy: 50 }}
+                                allowDecimals={false}
+                                domain={[0, "auto"]}
+                            />
+                            <Tooltip formatter={(v) => `₹${v?.toFixed?.(2)} Lakhs`} />
+                            <Legend />
+                            {/* District 1 Bars */}
+                            <Bar dataKey={`${d1}_Wages`} stackId="d1" name={`Wages (${d1})`} fill="#1f77b4" />
+                            <Bar dataKey={`${d1}_Material`} stackId="d1" name={`Material (${d1})`} fill="#ff7f0e" />
+                            <Bar dataKey={`${d1}_Admin`} stackId="d1" name={`Admin (${d1})`} fill="#2ca02c" />
+                            {/* District 2 Bars */}
+                            <Bar dataKey={`${d2}_Wages`} stackId="d2" name={`Wages (${d2})`} fill="#d62728" />
+                            <Bar dataKey={`${d2}_Material`} stackId="d2" name={`Material (${d2})`} fill="#9467bd" />
+                            <Bar dataKey={`${d2}_Admin`} stackId="d2" name={`Admin (${d2})`} fill="#8c564b" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
 
-                        {/* District 1 - three distinct colors */}
-                        <Bar dataKey={`${d1}_Wages`} stackId="d1" name={`Wages (${d1})`} fill="#1f77b4" />    // Blue
-                        <Bar dataKey={`${d1}_Material`} stackId="d1" name={`Material (${d1})`} fill="#ff7f0e" /> // Orange
-                        <Bar dataKey={`${d1}_Admin`} stackId="d1" name={`Admin (${d1})`} fill="#2ca02c" />      // Green
-
-                        {/* District 2 - three distinct colors */}
-                        <Bar dataKey={`${d2}_Wages`} stackId="d2" name={`Wages (${d2})`} fill="#d62728" />      // Red
-                        <Bar dataKey={`${d2}_Material`} stackId="d2" name={`Material (${d2})`} fill="#9467bd" /> // Purple
-                        <Bar dataKey={`${d2}_Admin`} stackId="d2" name={`Admin (${d2})`} fill="#8c564b" />      // Brown
-
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
+                {/* --- NEW: Line Chart Card --- */}
+                <div className="card chart-card" style={{ marginTop: '2rem' }}>
+                    <h3>Average Daily Wage Comparison ({d1} vs {d2})</h3>
+                    <ResponsiveContainer width="100%" height={400}>
+                        <LineChart data={lineChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="month" />
+                            <YAxis
+                                tickFormatter={(v) => `₹${v}`}
+                                label={{ value: "Average Wage (₹)", angle: -90, position: "insideLeft" }}
+                            />
+                            <Tooltip formatter={(v) => `₹${v?.toFixed?.(2)}`} />
+                            <Legend />
+                            <Line
+                                type="monotone"
+                                dataKey={`${d1}_AvgWage`}
+                                name={`Avg. Wage (${d1})`}
+                                stroke="#8884d8"
+                                strokeWidth={2}
+                                activeDot={{ r: 8 }}
+                            />
+                            <Line
+                                type="monotone"
+                                dataKey={`${d2}_AvgWage`}
+                                name={`Avg. Wage (${d2})`}
+                                stroke="#82ca9d"
+                                strokeWidth={2}
+                                activeDot={{ r: 8 }}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            </>
         );
     };
 
     return (
         <div className="comparison-page">
-            {/* --- ADDED THIS WRAPPER --- */}
             <div className="content-wrapper">
                 <header className="dashboard-header">
                     <h1>District-wise Comparison</h1>
-                    <p>Compare two districts' monthly expenditure side-by-side.</p>
+                    <p>Compare two districts' monthly expenditure and average wages side-by-side.</p>
                 </header>
 
                 <div className="card filter-card">
@@ -269,12 +317,9 @@ const DistrictComparisonPage = () => {
                 </div>
 
                 <main className="comparison-content">{renderContent()}</main>
-
-                {/* --- ADDED THIS CLOSING DIV --- */}
             </div>
         </div>
     );
 };
 
 export default DistrictComparisonPage;
-

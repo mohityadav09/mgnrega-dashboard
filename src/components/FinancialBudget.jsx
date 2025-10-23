@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import { FaBoxOpen } from 'react-icons/fa';
 import './FinancialBudget.css';
-import './Filters.css';
+import './FinancialBudgetFilter.css';
 
 // --- Filter Data ---
 const financialYears = ["2024-2025", "2023-2024", "2022-2023"];
