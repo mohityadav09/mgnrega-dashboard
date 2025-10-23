@@ -40,3 +40,13 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Add this to your main/global CSS file */
+.app-layout {
+  display: flex;
+}
+
+.main-content {
+  flex-grow: 1; /* This is the key property! */
+  /* It makes this element expand to fill all remaining space */
+}

@@ -36,10 +36,13 @@ const Sidebar = () => {
           </summary>
           <ul className="submenu">
             <li>
-              <Link to="/budget">Budget vs. Spending</Link>
+              <Link to="/single-view">Single View Analysis</Link>
             </li>
             <li>
-              <Link to="/expenditure">Expenditure Breakdown</Link>
+              <Link to="/compare-districts">Compare along districts</Link>
+            </li>
+            <li>
+              <Link to="/compare-financial-years">Compare along financial years</Link>
             </li>
           </ul>
         </details>

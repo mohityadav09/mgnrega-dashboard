@@ -1,0 +1,157 @@
+/* --- Root Container --- */
+.comparison-page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f4f6f9;
+  padding: 1.5rem 2rem;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* --- Content Wrapper for Readability --- */
+/* This new wrapper centers your content and prevents it from being too wide on large screens. */
+.content-wrapper {
+  width: 100%;
+  max-width: 2400px; /* Adjust this value as needed */
+  margin: 0 auto; /* This centers the content horizontally */
+}
+
+
+/* --- Header --- */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.dashboard-header p {
+  margin: 0;
+  color: #5a6e82;
+  font-size: 1rem;
+}
+
+/* --- Filter Card --- */
+.filter-card {
+  background: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Filters arranged neatly in grid */
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* More responsive */
+  gap: 1rem;
+  width: 100%;
+}
+
+/* --- Main Content --- */
+.comparison-content {
+  width: 100%;
+}
+
+/* --- Single-column chart layout (default) --- */
+/* The grid will now be handled within its container */
+.chart-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.chart-card h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* --- Loading/Error States --- */
+.message-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 1rem;
+  font-size: 1.2rem;
+  color: #5a6e82;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.error-container {
+  flex-direction: column;
+  background-color: #fff8f8;
+  border: 1px solid #fbdbe0;
+  color: #c0392b;
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #e74c3c;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+}
+
+/* --- Custom Tooltip --- */
+.custom-tooltip {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.tooltip-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.tooltip-details {
+  list-style: none;
+  padding-left: 10px;
+  margin: 5px 0 10px 0;
+}
+
+.tooltip-details li {
+  color: #555;
+  font-size: 12px;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .comparison-page {
+    padding: 1rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}

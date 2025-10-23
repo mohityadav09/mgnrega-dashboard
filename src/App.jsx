@@ -4,6 +4,8 @@ import Sidebar from './components/Sidebar';
 import './components/Navbar.css';
 import Homepage from './components/Homepage';
 import FinancialBudgetPage from './components/FinancialBudget';
+import DistrictComparisonPage from './components/DistrictComparisonPage';
+ 
 
 function App() {
   return (
@@ -19,7 +21,9 @@ function App() {
             <Route path="/" element={<Homepage />} />
 
             {/* Correct route for Financial Budget Page */}
-            <Route path="/budget" element={<FinancialBudgetPage />} />
+            <Route path="/single-view" element={<FinancialBudgetPage />} />
+
+            <Route path="/compare-districts" element={<DistrictComparisonPage />} />
 
             {/* Optional: Not Found page */}
             {/* <Route path="*" element={<div>404 - Page Not Found</div>} /> */}
