@@ -5,6 +5,9 @@ import './components/Navbar.css';
 import Homepage from './components/Homepage';
 import FinancialBudgetPage from './components/FinancialBudget';
 import DistrictComparisonPage from './components/DistrictComparisonPage';
+import YearComparisonPage from './components/FinancialYearComaprison';
+import ParticipationStatsPage from './components/ParticipationStats'
+import WorkProgressPage from './components/WorkProgress';
  
 
 function App() {
@@ -24,6 +27,12 @@ function App() {
             <Route path="/single-view" element={<FinancialBudgetPage />} />
 
             <Route path="/compare-districts" element={<DistrictComparisonPage />} />
+
+            <Route path="/compare-financial-years" element={< YearComparisonPage/>} />
+            <Route path="/participation" element={< ParticipationStatsPage/>} />
+            <Route path="/work-status" element={< WorkProgressPage/>} />
+
+           
 
             {/* Optional: Not Found page */}
             {/* <Route path="*" element={<div>404 - Page Not Found</div>} /> */}

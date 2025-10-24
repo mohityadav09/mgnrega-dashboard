@@ -1,0 +1,146 @@
+/* General Page Layout */
+.participation-page {
+    padding: 2rem;
+    background-color: #f4f7f6;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+}
+
+.dashboard-header p {
+    font-size: 1.1rem;
+    color: #4a5568;
+    margin-top: 0.5rem;
+}
+
+/* Card Base Style */
+.card {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+}
+
+/* Filter Card */
+.filter-card {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.filter-select-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-select-container label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+}
+
+.filter-select__control {
+    border-radius: 0.5rem !important;
+    border: 1px solid #cbd5e0 !important;
+    box-shadow: none !important;
+}
+
+.filter-select__control--is-focused {
+    border-color: #4299e1 !important;
+    box-shadow: 0 0 0 1px #4299e1 !important;
+}
+
+/* Chart Content */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+/* On larger screens, show charts side-by-side */
+@media (min-width: 1024px) {
+    .charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Make the first chart span full width if there are 3 */
+    .charts-grid > .chart-card:first-child:nth-last-child(3) {
+        grid-column: 1 / -1;
+    }
+}
+
+.chart-card {
+    padding: 1.5rem;
+}
+
+.chart-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Message/Loading/Error Containers */
+.message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.message-container p {
+    margin: 0;
+    margin-top: 1rem;
+}
+
+.error-container {
+    color: #c53030;
+    background-color: #fff5f5;
+    border-color: #fc8181;
+}
+
+.error-icon {
+    font-size: 2.5rem;
+    color: #c53030;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner-icon {
+    font-size: 2.5rem;
+    color: #4299e1;
+    animation: spin 1s linear infinite;
+}
