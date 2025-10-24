@@ -2,7 +2,8 @@
 
 /* This targets the container for each dropdown */
 .filter-select-container {
-  width: 200px; /* Adjust width as needed */
+  width: 800px; /* Increased from 600px, adjust as needed */
+  margin-bottom: 20px; /* Adds a 20px gap below each filter */
   font-family: var(--font-family);
   color: #333;
 }

@@ -55,15 +55,13 @@ const Sidebar = () => {
           </summary>
           <ul className="submenu">
             <li>
-              <Link to="/participation">Participation Stats</Link>
+              <Link to="/participation">Participation Stats & Demographics</Link>
             </li>
-            <li>
-              <Link to="/demographics">Social Demographics</Link>
-            </li>
+            
           </ul>
         </details>
 
-        {/* Project Insights Section */}
+         {/* Project Insights Section */}
         <details className="collapsible-section">
           <summary className="sidebar-link">
             <FaBuilding />
@@ -73,14 +71,14 @@ const Sidebar = () => {
             <li>
               <Link to="/work-status">Work Status</Link>
             </li>
-            <li>
+            {/* <li>
               <Link to="/asset-types">Asset Types</Link>
-            </li>
+            </li> */}
           </ul>
-        </details>
+        </details> 
 
         {/* Analysis Section */}
-        <details className="collapsible-section">
+        {/* <details className="collapsible-section">
           <summary className="sidebar-link">
             <FaFlag />
             <span>Analysis</span>
@@ -93,7 +91,7 @@ const Sidebar = () => {
               <Link to="/red-flags">Problem Areas</Link>
             </li>
           </ul>
-        </details>
+        </details> */} 
       </ul>
 
       {/* --- Footer Section --- */}

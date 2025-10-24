@@ -81,3 +81,21 @@
 .filter-select__menu-list::-webkit-scrollbar-thumb:hover {
   background-color: #aaa;
 }
+/* --- Filter Card --- */
+.filter-card {
+  background: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Filters arranged neatly in grid */
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* More responsive */
+  gap: 1rem;
+  width: 100%;
+}
