@@ -64,7 +64,7 @@
 
 /* Limit dropdown height and make it scrollable */
 .filter-select__menu-list {
-  max-height: 80px !important; /* Adjust as needed */
+  max-height: 120px !important; /* Adjust as needed */
   overflow-y: auto !important;  /* Enables scrolling */
 }
 

@@ -96,7 +96,7 @@ const Sidebar = () => {
 
       {/* --- Footer Section --- */}
       <div className="sidebar-footer">
-        <Link to="/about" className="sidebar-link">
+        <Link to="https://www.data.gov.in/resource/district-wise-mgnrega-data-glance#api" className="sidebar-link">
           <FaQuestionCircle />
           <span>About This Data</span>
         </Link>

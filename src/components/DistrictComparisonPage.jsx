@@ -4,7 +4,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
     LineChart, Line // --- ADDED LineChart and Line ---
 } from "recharts";
-import { FaBoxOpen } from "react-icons/fa";
+import { FaBoxOpen, FaSpinner} from "react-icons/fa";
 import "./DistrictComparisonPage.css";
 import "./financialBudgetFilter.css";
 
@@ -193,7 +193,14 @@ const DistrictComparisonPage = () => {
 
     // --- Render UI ---
     const renderContent = () => {
-        if (loading) return <div className="message-container">Loading...</div>;
+        if (loading) {
+               return (
+                              <div className="message-container">
+                                  <FaSpinner className="spinner-icon" />
+                                  <p>Loading data...</p>
+                              </div>
+                          );
+            }
         if (error)
             return (
                 <div className="message-container error-container">

@@ -3,7 +3,7 @@ import Select from 'react-select';
 import {
   BarChart, Bar, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { FaBoxOpen } from 'react-icons/fa';
+import { FaSpinner,FaBoxOpen } from 'react-icons/fa';
 import './FinancialBudget.css';
 import './FinancialBudgetFilter.css';
 
@@ -127,7 +127,12 @@ const FinancialBudgetPage = () => {
   // --- UI Renderer ---
   const renderContent = () => {
     if (loading) {
-      return <div className="message-container">Loading data...</div>;
+       return (
+                      <div className="message-container">
+                          <FaSpinner className="spinner-icon" />
+                          <p>Loading data...</p>
+                      </div>
+                  );
     }
     if (error) {
       return (

@@ -4,8 +4,12 @@ import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     BarChart, Bar, Legend, PieChart, Pie, Cell, Sector
 } from 'recharts';
-// UPDATE: Imported a new icon for the error state
-import { FaUsers, FaCalendarAlt, FaRupeeSign, FaCheckCircle, FaBoxOpen } from 'react-icons/fa';
+// UPDATE: Imported new icons for additional KPI cards
+import { 
+    FaUsers, FaCalendarAlt, FaRupeeSign, FaCheckCircle, FaBoxOpen, 
+    FaUserFriends, FaWalking, FaTrophy, FaWallet, FaClipboardList ,
+    FaSpinner
+} from 'react-icons/fa';
 import './Homepage.css';
 import './Filters.css';
 
@@ -58,7 +62,6 @@ const Homepage = () => {
 
             setLoading(true);
             setError(null);
-            // Also reset dashboard data to prevent showing stale data on error
             setDashboardData(null); 
             
             try {
@@ -67,17 +70,15 @@ const Homepage = () => {
                 url.searchParams.append('state_name', selectedState.value);
                 url.searchParams.append('district_name', selectedDistrict.value);
                 url.searchParams.append('month', selectedMonth.value);
-          
+            
                 const response = await fetch(url);
                 
                 if (!response.ok) {
-                    // This will be caught by the catch block
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 
                 const data = await response.json();
 
-                // Check if the API returns an empty object or array, which also means no data
                 if (Object.keys(data).length === 0) {
                     throw new Error("No data found for this selection.");
                 }
@@ -86,7 +87,6 @@ const Homepage = () => {
                 
             } catch (e) {
                 console.error("Failed to fetch dashboard data:", e);
-                // Set a user-friendly error message
                 setError('No records are available for the selected filters.');
             } finally {
                 setLoading(false);
@@ -96,16 +96,22 @@ const Homepage = () => {
         fetchData();
     }, [selectedYear, selectedState, selectedDistrict, selectedMonth]);
 
-    // ... (all your useMemo hooks remain unchanged)
+    // UPDATE: Expanded the kpiData hook to include more cards
     const kpiData = useMemo(() => {
         if (!dashboardData) return [];
-        const totalExpInRupees = parseFloat(dashboardData.total_exp) * 100000; 
+        const totalExpInRupees = parseFloat(dashboardData.total_exp) * 100000;
 
         return [
-            { title: 'Households Worked', value: (dashboardData.total_households_worked || 0).toLocaleString('en-IN'), icon: <FaUsers /> },
+            { title: 'Households Worked', value: formatNumber(dashboardData.total_households_worked), icon: <FaUsers /> },
+            { title: 'Individuals Worked', value: formatNumber(dashboardData.total_individuals_worked), icon: <FaUserFriends /> },
+            { title: 'Total Active Workers', value: formatNumber(dashboardData.total_no_of_active_workers), icon: <FaWalking /> },
             { title: 'Avg. Employment / HH', value: `${dashboardData.average_days_of_employment_provided_per_household || 0} Days`, icon: <FaCalendarAlt /> },
+            { title: 'HHs Completed 100 Days', value: formatNumber(dashboardData.total_no_of_hhs_completed_100_days_of_wage_employment), icon: <FaTrophy /> },
+            { title: 'Avg. Daily Wage', value: formatNumber(parseFloat(dashboardData.average_wage_rate_per_day_per_person).toFixed(2), true), icon: <FaWallet /> },
             { title: 'Total Expenditure', value: formatNumber(totalExpInRupees, true), icon: <FaRupeeSign /> },
-            { title: 'On-Time Payments', value: `${dashboardData.percentage_payments_generated_within_15_days || 'N/A'}%`, icon: <FaCheckCircle /> }
+            { title: 'Total Works Initiated', value: formatNumber(dashboardData.total_no_of_works_takenup), icon: <FaClipboardList /> },
+            // You can uncomment the line below to add On-Time Payments back if the data is available
+            // { title: 'On-Time Payments', value: `${dashboardData.percentage_payments_generated_within_15_days || 'N/A'}%`, icon: <FaCheckCircle /> }
         ];
     }, [dashboardData]);
 
@@ -176,13 +182,16 @@ const Homepage = () => {
         }
     };
     
-    // --- Render Logic ---
     const renderContent = () => {
-        if (loading) {
-            return <div className="message-container">Loading data...</div>;
-        }
+       if (loading) {
+              return (
+                             <div className="message-container">
+                                 <FaSpinner className="spinner-icon" />
+                                 <p>Loading data...</p>
+                             </div>
+                         );
+           }
 
-        // UPDATE: This is the new, styled error display
         if (error) {
             return (
                 <div className="message-container error-container">
@@ -192,7 +201,6 @@ const Homepage = () => {
             );
         }
 
-        // If there's no error and no data, it's also a form of error/empty state
         if (!dashboardData) {
              return (
                 <div className="message-container error-container">
@@ -221,15 +229,15 @@ const Homepage = () => {
                         <h3>Work Status</h3>
                         <ResponsiveContainer width="100%" height={300}>
                            <BarChart data={workStatusData} layout="vertical" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                               <CartesianGrid strokeDasharray="3 3" />
-                               <XAxis type="number" />
-                               <YAxis type="category" dataKey="name" width={80} />
-                               <Tooltip formatter={(value) => value.toLocaleString('en-IN')}/>
-                               <Bar dataKey="value" barSize={30}>
-                                 {workStatusData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.color} />
-                                 ))}
-                               </Bar>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis type="number" />
+                                <YAxis type="category" dataKey="name" width={80} />
+                                <Tooltip formatter={(value) => value.toLocaleString('en-IN')}/>
+                                <Bar dataKey="value" barSize={30}>
+                                   {workStatusData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                   ))}
+                                </Bar>
                            </BarChart>
                         </ResponsiveContainer>
                     </div>

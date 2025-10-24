@@ -10,7 +10,7 @@ import "./ParticipationStats.css"; // We'll create this CSS file
 // --- Static Data ---
 // Added data from your new example
 const financialYears = ["2024-2025", "2023-2024", "2022-2023", "2020-2021"];
-const states = ["RAJASTHAN", "ASSAM"];
+const states = ["RAJASTHAN"];
 const districtsByState = {
     RAJASTHAN: [
         "ALWAR", "AJMER", "BANSWARA", "BARAN", "BARMER", "BHARATPUR", "BHILWARA",
@@ -18,9 +18,6 @@ const districtsByState = {
         "HANUMANGARH", "JAIPUR", "JAISALMER", "JALORE", "JHALAWAR", "JHUNJHUNU",
         "JODHPUR", "KARAULI", "KOTA", "NAGAUR", "PALI", "PRATAPGARH", "RAJSAMAND",
         "SAWAI MADHOPUR", "SIKAR", "SIROHI", "SRI GANGANAGAR", "TONK", "UDAIPUR",
-    ],
-    ASSAM: [
-        "Morigaon", "Kamrup", "Dibrugarh", "Jorhat", "Nagaon", "Cachar", "Barpeta"
     ]
 };
 

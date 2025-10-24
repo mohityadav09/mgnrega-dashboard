@@ -148,7 +148,7 @@ const WorkProgressPage = () => {
             return (
                 <div className="message-container">
                     <FaSpinner className="spinner-icon" />
-                    <p>Loading work progress data...</p>
+                    <p>Loading data...</p>
                 </div>
             );
         }

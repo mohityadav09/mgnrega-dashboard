@@ -8,6 +8,7 @@ import DistrictComparisonPage from './components/DistrictComparisonPage';
 import YearComparisonPage from './components/FinancialYearComaprison';
 import ParticipationStatsPage from './components/ParticipationStats'
 import WorkProgressPage from './components/WorkProgress';
+import logo from "./assets/rajasthan-map.png";
  
 
 function App() {
